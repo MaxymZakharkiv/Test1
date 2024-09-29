@@ -2,8 +2,10 @@ import { useEffect, useState, useRef } from 'react';
 import { getDifferingRowIndexes } from 'utils';
 import { filterDataByTime } from './utils';
 import { BlinkOptions, Primitive } from 'types';
+// import { eventBus } from '@grafana/runtime';
 
 export const useBlinkingCells = (
+  eventBus: any,
   cDS: any,
   dataSeries: any,
   blink: BlinkOptions,
@@ -17,6 +19,7 @@ export const useBlinkingCells = (
   const [blinkingCells, setBlinkingCells] = useState<{ [key: string]: boolean }>({});
   const timersRef = useRef<{ [key: string]: { intervalId: number; timeoutId: number } }>({});
   const init = useRef<boolean>(true);
+
   const startBlinking = (
     cellKey: string,
     duration: number,
@@ -99,7 +102,10 @@ export const useBlinkingCells = (
   }, [dataSeries, columns, visibleColumns]);
 
   useEffect(() => {
+    const subscription = eventBus.subscribe({ type: 'render' }, () => {});
+
     return () => {
+      subscription.unsubscribe();
       Object.values(timersRef.current).forEach(({ intervalId, timeoutId }) => {
         clearInterval(intervalId);
         clearTimeout(timeoutId);
@@ -107,6 +113,5 @@ export const useBlinkingCells = (
       timersRef.current = {};
     };
   }, []);
-
   return { blinkingCells };
 };

@@ -15,7 +15,8 @@ import { useBlinkingCells } from 'hooks';
 interface Props extends PanelProps<SimpleOptions> {}
 
 export const TablePanel: React.FC<Props> = (props) => {
-  const { options, data, width, height, fieldConfig, id, onOptionsChange, title } = props;
+  console.log(props);
+  const { options, data, width, height, fieldConfig, id, onOptionsChange, title, eventBus } = props;
   let {
     hideShowColumns,
     hideShowRows,
@@ -124,6 +125,7 @@ export const TablePanel: React.FC<Props> = (props) => {
   };
 
   const { blinkingCells } = useBlinkingCells(
+    eventBus,
     cData,
     data.series,
     blink,
